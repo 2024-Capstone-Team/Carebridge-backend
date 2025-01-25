@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -187,7 +188,7 @@ public class MessageService {
                     patientRepository.findByPatientId(recentMessage.getPatientId()).getName(), // 발신자 이름을 문자열로 변환하여 사용
                     recentMessage.getChatRoomId(),
                     recentMessage.getMessageContent(),
-                    Timestamp.valueOf(recentMessage.getTimestamp()),
+                    convertToTimestamp(recentMessage.getTimestamp()),
                     recentMessage.getReadStatus()
             );
 
@@ -197,5 +198,15 @@ public class MessageService {
 
         // 메시지 요약 정보 리스트를 반환합니다.
         return summaryList;
+    }
+
+    // ISO 8601 -> TimeStamp 변환 메소드
+    private Timestamp convertToTimestamp(String isoTimestamp) {
+        if (isoTimestamp == null || isoTimestamp.isEmpty()) {
+            throw new IllegalArgumentException("Invalid timestamp: " + isoTimestamp);
+        }
+
+        LocalDateTime localDateTime = LocalDateTime.parse(isoTimestamp);
+        return Timestamp.valueOf(localDateTime);
     }
 }
