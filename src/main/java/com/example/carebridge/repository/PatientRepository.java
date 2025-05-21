@@ -1,14 +1,15 @@
 package com.example.carebridge.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.example.carebridge.entity.Patient;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * 환자 정보 관리를 위한 레포지토리 인터페이스
@@ -44,6 +45,7 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
      * @param department 부서명
      * @return 해당 병원과 부서에 속한 환자 목록
      */
+    @Cacheable(value = "patientsByHospitalAndDept", key = "#hospitalId + '_' + #department")
     @Query("SELECT p FROM Patient p WHERE p.hospitalId = :hospitalId AND p.department = :department ORDER BY p.name")
     Optional<List<Patient>> findByHospitalIdAndDepartment(
         @Param("hospitalId") Integer hospitalId, 
