@@ -1,13 +1,14 @@
 package com.example.carebridge.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.example.carebridge.entity.MedicalStaff;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * 의료진 정보 관리를 위한 레포지토리 인터페이스
@@ -28,11 +29,11 @@ public interface MedicalStaffRepository extends JpaRepository<MedicalStaff, Inte
 
     /**
      * 의료진 ID로 의료진을 조회합니다.
-     * Optional을 사용하여 null 안전성을 보장합니다.
      *
      * @param medicalStaffId 의료진 ID
      * @return 의료진 정보를 담은 Optional 객체
      */
+    @Cacheable(value = "medicalStaffById", key = "#medicalStaffId")
     @Query("SELECT ms FROM MedicalStaff ms WHERE ms.medicalStaffId = :medicalStaffId")
     Optional<MedicalStaff> findByMedicalStaffId(@Param("medicalStaffId") Integer medicalStaffId);
 
